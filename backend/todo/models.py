@@ -1,3 +1,29 @@
+from django.conf import settings
 from django.db import models
 
-# Create your models here.
+
+class Task(models.Model):
+    """
+    The task model for todo
+    """
+    STATUS_DONE = True
+    STATUS_UNDONE = False
+    STATUS = {
+        STATUS_DONE: 'Done',
+        STATUS_UNDONE: 'Undone',
+    }
+
+    name = models.CharField(max_length=256)
+    description = models.TextField(default='')
+
+    status = models.BooleanField(default=False, choices=STATUS.items())
+
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                   on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        get_latest_by = '-created_on'
+
+    def __str__(self):
+        return f'{self.name[:20]} - {self.created_on.strftime("%Y-%m-%d")}'

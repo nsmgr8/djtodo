@@ -22,6 +22,10 @@ class Task(models.Model):
                                    on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
 
+    done_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True,
+                                blank=True, on_delete=models.CASCADE,
+                                related_name='done')
+
     class Meta:
         get_latest_by = '-created_on'
 

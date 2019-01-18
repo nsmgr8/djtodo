@@ -25,6 +25,7 @@ class Task(models.Model):
     done_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True,
                                 blank=True, on_delete=models.CASCADE,
                                 related_name='done')
+    done_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         get_latest_by = '-created_on'

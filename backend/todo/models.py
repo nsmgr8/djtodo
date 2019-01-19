@@ -31,4 +31,4 @@ class Task(models.Model):
         get_latest_by = '-created_on'
 
     def __str__(self):
-        return f'{self.name[:20]} - {self.created_on.strftime("%Y-%m-%d")}'
+        return self.name and self.name[:20] or '<None>'

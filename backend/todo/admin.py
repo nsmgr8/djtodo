@@ -45,11 +45,12 @@ class TaskAdmin(admin.ModelAdmin):
             # when creating new task, creator is current user
             obj.created_by = request.user
 
-        if obj.status:
+        if obj.status and not obj.done_by:
             # record who completed the task
             obj.done_by = request.user
             obj.done_at = datetime.now()
-        else:
+
+        if not obj.status:
             obj.done_by = None
             obj.done_at = None
 

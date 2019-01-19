@@ -125,3 +125,24 @@ class TaskAdminTest(TestCase):
         # setting task done mark current user to be completer
         self.assertTrue(task.status)
         self.assertEqual(task.done_by, self.user2)
+
+    def test_form(self):
+        ta = TaskAdmin(Task, self.site)
+        request = MockRequest()
+        request.user = self.user1
+
+        fields = {x.name for x in Task._meta.get_fields()} - {'id'}
+        task = Task.objects.create(name='t1', created_by=self.user1)
+
+        ta.get_form(request, task)
+
+        # users can modify own task
+        editable_fields = {'name', 'description', 'status'}
+        self.assertEqual(fields - set(ta.readonly_fields), editable_fields)
+
+        request.user = self.user2
+        ta.get_form(request, task)
+
+        # users can only mark done/undone others tasks
+        editable_fields = {'status'}
+        self.assertEqual(fields - set(ta.readonly_fields), editable_fields)

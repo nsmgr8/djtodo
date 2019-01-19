@@ -42,3 +42,43 @@ class TaskModelTest(TestCase):
         self.assertEqual(task1.created_on.date(), date.today())
         self.assertIsNone(task1.done_by)
         self.assertIsNone(task1.done_at)
+
+
+class MockRequest:
+    pass
+
+
+class TaskAdminTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.user1 = get_user_model().objects.create(username='user1',
+                                                    is_staff=True,
+                                                    is_superuser=True)
+        cls.user2 = get_user_model().objects.create(username='user2',
+                                                    is_staff=True,
+                                                    is_superuser=True)
+        cls.site = AdminSite()
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        get_user_model().objects.all().delete()
+        super().tearDownClass()
+
+    def setUp(self):
+        self.task = Task.objects.create(name='Task', created_by=self.user1)
+
+    def tearDown(self):
+        Task.objects.all().delete()
+
+    def test_delete_perm(self):
+        ta = TaskAdmin(Task, self.site)
+
+        request = MockRequest()
+        self.assertFalse(ta.has_delete_permission(request))
+
+        request.user = self.user1
+        self.assertTrue(ta.has_delete_permission(request, self.task))
+
+        request.user = self.user2
+        self.assertFalse(ta.has_delete_permission(request, self.task))

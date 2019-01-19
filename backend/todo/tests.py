@@ -77,8 +77,51 @@ class TaskAdminTest(TestCase):
         request = MockRequest()
         self.assertFalse(ta.has_delete_permission(request))
 
+        # only own tasks can be deleted
         request.user = self.user1
         self.assertTrue(ta.has_delete_permission(request, self.task))
 
         request.user = self.user2
         self.assertFalse(ta.has_delete_permission(request, self.task))
+
+    def test_save_model(self):
+        ta = TaskAdmin(Task, self.site)
+        request = MockRequest()
+        request.user = self.user1
+
+        task = Task(name='t1')
+
+        ta.save_model(request, task, {}, False)
+        task.refresh_from_db()
+
+        # new task is owned by current user and not done
+        self.assertEqual(task.created_by, self.user1)
+        self.assertFalse(task.status)
+        self.assertIsNone(task.done_by)
+
+        task.status = True
+        ta.save_model(request, task, {}, False)
+        task.refresh_from_db()
+
+        # setting task done mark current user to be completer
+        self.assertTrue(task.status)
+        self.assertEqual(task.done_by, self.user1)
+        self.assertEqual(task.done_at.date(), date.today())
+
+        task.status = False
+        ta.save_model(request, task, {}, False)
+        task.refresh_from_db()
+
+        # marking undone removes completer
+        self.assertFalse(task.status)
+        self.assertIsNone(task.done_by)
+
+        # allow others to mark done
+        request.user = self.user2
+        task.status = True
+        ta.save_model(request, task, {}, False)
+        task.refresh_from_db()
+
+        # setting task done mark current user to be completer
+        self.assertTrue(task.status)
+        self.assertEqual(task.done_by, self.user2)

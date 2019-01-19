@@ -4,6 +4,7 @@ django admin based task UI
 from datetime import datetime
 
 from django.contrib import admin
+from django.utils import timezone
 
 from .models import Task
 
@@ -48,7 +49,7 @@ class TaskAdmin(admin.ModelAdmin):
         if obj.status and not obj.done_by:
             # record who completed the task
             obj.done_by = request.user
-            obj.done_at = datetime.now()
+            obj.done_at = timezone.now()
 
         if not obj.status:
             obj.done_by = None

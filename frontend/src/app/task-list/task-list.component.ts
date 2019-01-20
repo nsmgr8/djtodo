@@ -8,6 +8,7 @@ import { TasksService } from '../services/tasks.service';
     styleUrls: ['./task-list.component.scss']
 })
 export class TaskListComponent implements OnInit {
+    tasks = [];
 
     constructor(
         private tasksService: TasksService
@@ -26,7 +27,7 @@ export class TaskListComponent implements OnInit {
     }
 
     setTasks(data) {
-        console.log(data);
+        this.tasks = data;
     }
 
     onError(error) {

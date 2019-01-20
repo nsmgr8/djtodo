@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 
@@ -16,6 +17,7 @@ import { TaskCreateComponent } from './task-create/task-create.component';
     ],
     imports: [
         BrowserModule,
+        HttpClientModule,
 
         CollapseModule.forRoot(),
 

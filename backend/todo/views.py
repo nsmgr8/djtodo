@@ -1,4 +1,10 @@
-from django.contrib.auth import get_user_model
+import json
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth import (
+    get_user_model, authenticate, login as auth_login, logout as auth_logout
+)
 
 from rest_framework import viewsets, serializers, generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -28,3 +34,33 @@ class TaskViewSet(viewsets.ModelViewSet):
 class UserListView(generics.ListAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+
+
+@require_POST
+def login(request):
+    creds = json.loads(request.body)
+    user = authenticate(**creds)
+    if user is None:
+        resp = JsonResponse({'error': 'login failed'}, status=400)
+        return resp
+
+    auth_login(request, user)
+    return JsonResponse({
+        'username': user.username,
+        'email': user.email,
+    })
+
+
+@require_POST
+def logout(request):
+    auth_logout(request)
+    return JsonResponse({'success': 'logout'})
+
+
+def is_authenticated(request):
+    if request.user.is_authenticated:
+        return JsonResponse({
+            'username': request.user.username,
+            'email': request.user.email,
+        })
+    return JsonResponse({'error': 'not authenticated'}, status=401)

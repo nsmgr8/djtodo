@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 
 import { TasksService } from '../services/tasks.service';
 
@@ -7,17 +7,23 @@ import { TasksService } from '../services/tasks.service';
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
     model = {
         username: '',
         password: '',
     };
+
+    @ViewChild('usernameInput') usernameInput;
 
     constructor(
         private tasksService: TasksService
     ) { }
 
     ngOnInit() {
+    }
+
+    ngAfterViewInit() {
+        this.usernameInput.nativeElement.focus();
     }
 
     login() {

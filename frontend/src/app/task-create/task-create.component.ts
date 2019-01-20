@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TasksService } from '../services/tasks.service';
@@ -8,11 +8,13 @@ import { TasksService } from '../services/tasks.service';
     templateUrl: './task-create.component.html',
     styleUrls: ['./task-create.component.scss']
 })
-export class TaskCreateComponent implements OnInit {
+export class TaskCreateComponent implements OnInit, AfterViewInit {
     model = {
         name: '',
         description: '',
     };
+
+    @ViewChild('nameInput') nameInput;
 
     constructor(
         private tasksService: TasksService,
@@ -20,6 +22,10 @@ export class TaskCreateComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+    }
+
+    ngAfterViewInit() {
+        this.nameInput.nativeElement.focus();
     }
 
     create() {

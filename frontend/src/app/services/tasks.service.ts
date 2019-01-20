@@ -13,8 +13,13 @@ export class TasksService {
         private http: HttpClient
     ) { }
 
+    api_url(path) {
+        return `${this.api_root}${path}/`;
+    }
+
     get(path, options = {}) {
-        return this.http.get(`${this.api_root}${path}/`, options);
+        const url = this.api_url(path);
+        return this.http.get(url, options);
     }
 
     getTasks() {
@@ -23,5 +28,10 @@ export class TasksService {
 
     getUsers() {
         return this.get('users');
+    }
+
+    login(creds) {
+        const url = this.api_url('login');
+        return this.http.post(url, creds);
     }
 }

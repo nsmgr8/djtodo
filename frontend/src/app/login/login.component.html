@@ -1,0 +1,47 @@
+<div class="container-fluid">
+    <form (ngSubmit)="login()">
+        <div class="card mt-2">
+            <div class="card-header">
+                Login
+            </div>
+            <div class="card-body">
+                <div class="row form-group">
+                    <label class="col-md-4" for="id_username">
+                        Username
+                    </label>
+                    <div class="col-md-8">
+                        <input class="form-control"
+                               type="text"
+                               required
+                               autocomplete="username"
+                               name="username"
+                               [(ngModel)]="model.username"
+                               id="id_username">
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-md-4" for="id_password">
+                        Password
+                    </label>
+                    <div class="col-md-8">
+                        <input class="form-control"
+                               type="password"
+                               required
+                               autocomplete="current-password"
+                               name="password"
+                               [(ngModel)]="model.password"
+                               id="id_password">
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-secondary">
+                <button class="btn btn-primary mr-2" type="submit">
+                    Enter
+                </button>
+                <a class="btn btn-light" [routerLink]="['/']">
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>

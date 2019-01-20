@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { TasksService } from '../services/tasks.service';
 
@@ -12,14 +13,20 @@ export class LoginComponent implements OnInit, AfterViewInit {
         username: '',
         password: '',
     };
+    returnUrl = '/';
 
     @ViewChild('usernameInput') usernameInput;
 
     constructor(
-        private tasksService: TasksService
+        private tasksService: TasksService,
+        private router: Router,
+        private route: ActivatedRoute
     ) { }
 
     ngOnInit() {
+        this.route.params.subscribe(
+            params => this.returnUrl = params.returnUrl || '/'
+        );
     }
 
     ngAfterViewInit() {
@@ -35,7 +42,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
 
     setUser(data) {
-        console.log(data);
+        this.router.navigate([this.returnUrl]);
     }
 
     setError(error) {

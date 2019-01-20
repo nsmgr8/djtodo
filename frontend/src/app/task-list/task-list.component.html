@@ -5,6 +5,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>Created by</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -12,13 +13,27 @@
             <tbody>
                 <tr *ngFor="let task of tasks">
                     <td>
-                        {{ task.name }}
+                        <a [routerLink]="['/detail', task.pk]">
+                            {{ task.name }}
+                        </a>
                     </td>
                     <td>
                         {{ task.description }}
                     </td>
                     <td>
-                        {{ task.status }}
+                        {{ task.created_by }}<br>
+                        {{ task.created_on | date }}
+                    </td>
+                    <td>
+                        <div *ngIf="task.status">
+                            Done by {{ task.done_by }}<br>
+                            at {{ task.done_at | date }}
+                        </div>
+                        <div *ngIf="!task.status">
+                            <button class="btn btn-sm btn-outline-success">
+                                Mark Done
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </tbody>

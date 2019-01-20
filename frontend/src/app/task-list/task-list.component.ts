@@ -47,4 +47,17 @@ export class TaskListComponent implements OnInit {
     onError(error) {
         console.log(error);
     }
+
+    markDone(task) {
+        this.tasksService.markDone(task).subscribe(
+            data => this.update(data),
+            error => this.onError(error)
+        );
+    }
+
+    update(task) {
+        this.tasks = this.tasks.map(x => {
+            return x.pk === task.pk ? task : x;
+        });
+    }
 }

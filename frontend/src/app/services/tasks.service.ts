@@ -43,6 +43,11 @@ export class TasksService {
         return this.http.post(url, data);
     }
 
+    markDone(task) {
+        const url = this.api_url(`tasks/${task.pk}/mark_done`);
+        return this.http.post(url, {status: true});
+    }
+
     whoami() {
         return this.get('whoami').pipe(
             tap(user => {

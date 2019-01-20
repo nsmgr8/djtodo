@@ -36,7 +36,6 @@ export class TaskDetailComponent implements OnInit {
 
     setTask(data) {
         this.task = data;
-        console.log(data);
     }
 
     setUsers(data) {
@@ -45,5 +44,15 @@ export class TaskDetailComponent implements OnInit {
             users[x.pk] = x;
         });
         this.users = users;
+    }
+
+    markDone() {
+        this.tasksService.markDone(this.task).subscribe(
+            data => this.update(data)
+        );
+    }
+
+    update(task) {
+        this.task = task;
     }
 }

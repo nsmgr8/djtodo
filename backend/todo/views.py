@@ -5,9 +5,12 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth import (
     get_user_model, authenticate, login as auth_login, logout as auth_logout
 )
+from django.utils import timezone
 
 from rest_framework import viewsets, serializers, generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .models import Task
 
@@ -33,6 +36,32 @@ class TaskViewSet(viewsets.ModelViewSet):
     def create(self, request):
         request.data['created_by'] = request.user.pk
         return super().create(request)
+
+    def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.created_by != request.user:
+            return Response({'error': 'Updating own tasks only allowed'}, status=403)
+        return super().update(request, *args, **kwargs)
+
+    @action(detail=True, methods=['post'])
+    def mark_done(self, request, pk=None):
+        obj = self.get_object()
+        status = request.data['status']
+        if not status or obj.status:
+            return Response({'error': 'Only marking done allowed'}, status=400)
+
+        serializer = self.get_serializer(
+            obj,
+            data={
+                'status': True,
+                'done_by': request.user.pk,
+                'done_at': timezone.now(),
+            },
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
 
 class UserListView(generics.ListAPIView):

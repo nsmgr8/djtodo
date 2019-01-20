@@ -1,8 +1,6 @@
 """
 django admin based task UI
 """
-from datetime import datetime
-
 from django.contrib import admin
 from django.utils import timezone
 

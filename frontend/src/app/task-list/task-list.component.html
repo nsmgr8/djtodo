@@ -29,7 +29,8 @@
                         at {{ task.done_at | date }}
                     </div>
                     <div *ngIf="!task.status">
-                        <button class="btn btn-sm btn-outline-success">
+                        <button class="btn btn-sm btn-outline-success"
+                                (click)="markDone(task)">
                             Mark Done
                         </button>
                     </div>

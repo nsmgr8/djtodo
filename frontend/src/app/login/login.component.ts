@@ -41,7 +41,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
             );
     }
 
-    setUser(data) {
+    setUser(user) {
+        this.tasksService.currentUser = user;
         this.router.navigate([this.returnUrl]);
     }
 

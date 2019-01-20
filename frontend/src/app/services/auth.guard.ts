@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 
 
 import { of, Observable, throwError } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
+import { switchMap, catchError, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { TasksService } from './tasks.service';
@@ -28,6 +28,7 @@ export class AuthGuard implements CanActivate {
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
         return this.tasksService.get('is_authenticated').pipe(
+            tap(user => this.tasksService.currentUser = user),
             switchMap(user => of(true)),
             catchError(() => of(false))
         );

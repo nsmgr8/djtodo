@@ -13,6 +13,7 @@ urlpatterns = [
     path('login/', views.login),
     path('logout/', views.logout),
     path('is_authenticated/', views.is_authenticated),
+    path('whoami/', views.whoami),
     path('api-auth/', include('rest_framework.urls',
                               namespace='rest_framework'))
 ]

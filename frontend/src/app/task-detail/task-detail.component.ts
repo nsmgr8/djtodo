@@ -20,6 +20,7 @@ export class TaskDetailComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.tasksService.whoami().subscribe();
         this.route.params.pipe(
             switchMap(params => this.getTask(params)),
             tap(data => this.setTask(data)),

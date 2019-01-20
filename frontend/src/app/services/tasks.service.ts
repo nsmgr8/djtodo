@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+import { tap } from 'rxjs/operators';
+
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -8,6 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class TasksService {
     api_root = environment.production ? '/api/' : '//localhost:8000/api/';
+    currentUser;
 
     constructor(
         private http: HttpClient
@@ -38,5 +41,13 @@ export class TasksService {
     createTask(data) {
         const url = this.api_url('tasks');
         return this.http.post(url, data);
+    }
+
+    whoami() {
+        return this.get('whoami').pipe(
+            tap(user => {
+                this.currentUser = user;
+            })
+        );
     }
 }

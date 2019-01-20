@@ -18,6 +18,7 @@ export class TaskListComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.tasksService.whoami().subscribe();
         this.getTasks();
     }
 

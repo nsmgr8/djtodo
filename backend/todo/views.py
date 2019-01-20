@@ -50,6 +50,7 @@ def login(request):
 
     auth_login(request, user)
     return JsonResponse({
+        'pk': user.pk,
         'username': user.username,
         'email': user.email,
     })
@@ -62,9 +63,21 @@ def logout(request):
 
 
 def is_authenticated(request):
+    user = _whoami(request)
+    if user:
+        return JsonResponse(user)
+    return JsonResponse({'error': 'not authenticated'}, status=401)
+
+
+def whoami(request):
+    return JsonResponse(_whoami(request))
+
+
+def _whoami(request):
     if request.user.is_authenticated:
-        return JsonResponse({
+        return {
+            'pk': request.user.pk,
             'username': request.user.username,
             'email': request.user.email,
-        })
-    return JsonResponse({'error': 'not authenticated'}, status=401)
+        }
+    return {}

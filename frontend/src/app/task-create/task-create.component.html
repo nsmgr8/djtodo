@@ -1,3 +1,42 @@
-<p>
-  task-create works!
-</p>
+<div class="container-fluid">
+    <form (ngSubmit)="create()">
+        <div class="card mt-2">
+            <div class="card-header">
+                Create New Task
+            </div>
+            <div class="card-body">
+                <div class="row form-group">
+                    <label class="col-md-4" for="id_name">
+                        Name
+                    </label>
+                    <input id="id_name"
+                           required
+                           class="col-md-8 form-control"
+                           name="name"
+                           [(ngModel)]="model.name"
+                           type="text">
+                </div>
+                <div class="row form-group">
+                    <label class="col-12" for="id_description">
+                        Description
+                    </label>
+                    <textarea id="id_description"
+                              class="form-control"
+                              name="description"
+                              [(ngModel)]="model.description"
+                              rows="10"
+                    ></textarea>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary mr-2">
+                    Submit
+                </button>
+                <a class="btn btn-light"
+                   [routerLink]="['/']">
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>

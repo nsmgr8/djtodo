@@ -34,4 +34,9 @@ export class TasksService {
         const url = this.api_url('login');
         return this.http.post(url, creds);
     }
+
+    createTask(data) {
+        const url = this.api_url('tasks');
+        return this.http.post(url, data);
+    }
 }

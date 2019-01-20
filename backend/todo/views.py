@@ -30,6 +30,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+    def create(self, request):
+        request.data['created_by'] = request.user.pk
+        return super().create(request)
+
 
 class UserListView(generics.ListAPIView):
     queryset = get_user_model().objects.all()

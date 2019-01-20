@@ -11,13 +11,15 @@ import { AppComponent } from './app.component';
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskCreateComponent } from './task-create/task-create.component';
 import { LoginComponent } from './login/login.component';
+import { TaskDetailComponent } from './task-detail/task-detail.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         TaskListComponent,
         TaskCreateComponent,
-        LoginComponent
+        LoginComponent,
+        TaskDetailComponent
     ],
     imports: [
         BrowserModule,

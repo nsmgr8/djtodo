@@ -1,0 +1,48 @@
+<div class="container-fluid">
+    <div class="card mt-2" *ngIf="task">
+        <div class="card-header">
+            Task Detail: #{{ task.pk }}
+        </div>
+
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    Name
+                </dt>
+                <dd class="col-sm-8">
+                    {{ task.name }}
+                </dd>
+
+                <dt class="col-sm-4">
+                    Created by
+                </dt>
+                <dd class="col-sm-8">
+                    {{ users[task.created_by]?.username }}<br>
+                    on {{ task.created_on | date }}
+                </dd>
+
+                <dt class="col-sm-4">
+                    Status
+                </dt>
+                <dd class="col-sm-8">
+                    <div *ngIf="task.status">
+                        Done by {{ users[task.done_by]?.username }}<br>
+                        on {{ task.done_at | date }}
+                    </div>
+                    <button class="btn btn-sm btn-outline-success"
+                            *ngIf="!task.status"
+                            (click)="markDone()">
+                        Mark Done
+                    </button>
+                </dd>
+
+                <dt class="col-sm-4">
+                    Description
+                </dt>
+                <dd class="col-sm-8">
+                    {{ task.description }}
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>

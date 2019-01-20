@@ -1,42 +1,40 @@
-<div class="container-fluid">
-    <div class="table-responsive">
-        <table class="table table-sm table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Created by</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
+<div class="table-responsive">
+    <table class="table table-sm table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="d-none d-md-block">Description</th>
+                <th>Created by</th>
+                <th>Status</th>
+            </tr>
+        </thead>
 
-            <tbody>
-                <tr *ngFor="let task of tasks">
-                    <td>
-                        <a [routerLink]="['/detail', task.pk]">
-                            {{ task.name }}
-                        </a>
-                    </td>
-                    <td>
-                        {{ task.description }}
-                    </td>
-                    <td>
-                        {{ users[task.created_by]?.username }}<br>
-                        {{ task.created_on | date }}
-                    </td>
-                    <td>
-                        <div *ngIf="task.status">
-                            Done by {{ users[task.done_by]?.username }}<br>
-                            at {{ task.done_at | date }}
-                        </div>
-                        <div *ngIf="!task.status">
-                            <button class="btn btn-sm btn-outline-success">
-                                Mark Done
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <tbody>
+            <tr *ngFor="let task of tasks">
+                <td>
+                    <a [routerLink]="['/task', task.pk]">
+                        {{ task.name }}
+                    </a>
+                </td>
+                <td class="d-none d-md-block">
+                    {{ task.description }}
+                </td>
+                <td>
+                    {{ users[task.created_by]?.username }}<br>
+                    {{ task.created_on | date }}
+                </td>
+                <td>
+                    <div *ngIf="task.status">
+                        Done by {{ users[task.done_by]?.username }}<br>
+                        at {{ task.done_at | date }}
+                    </div>
+                    <div *ngIf="!task.status">
+                        <button class="btn btn-sm btn-outline-success">
+                            Mark Done
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

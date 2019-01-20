@@ -21,12 +21,12 @@
                         {{ task.description }}
                     </td>
                     <td>
-                        {{ task.created_by }}<br>
+                        {{ users[task.created_by]?.username }}<br>
                         {{ task.created_on | date }}
                     </td>
                     <td>
                         <div *ngIf="task.status">
-                            Done by {{ task.done_by }}<br>
+                            Done by {{ users[task.done_by]?.username }}<br>
                             at {{ task.done_at | date }}
                         </div>
                         <div *ngIf="!task.status">

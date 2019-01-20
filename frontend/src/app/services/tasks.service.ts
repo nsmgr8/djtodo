@@ -20,4 +20,8 @@ export class TasksService {
     getTasks() {
         return this.get('tasks');
     }
+
+    getUsers() {
+        return this.get('users');
+    }
 }

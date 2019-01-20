@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { tap, switchMap } from 'rxjs/operators';
+
 import { TasksService } from '../services/tasks.service';
 
 @Component({
@@ -9,6 +11,7 @@ import { TasksService } from '../services/tasks.service';
 })
 export class TaskListComponent implements OnInit {
     tasks = [];
+    users;
 
     constructor(
         private tasksService: TasksService
@@ -19,11 +22,21 @@ export class TaskListComponent implements OnInit {
     }
 
     getTasks() {
-        this.tasksService.getTasks()
-            .subscribe(
-                data => this.setTasks(data),
-                error => this.onError(error)
-            );
+        this.tasksService.getUsers().pipe(
+            tap(data => this.setUsers(data)),
+            switchMap(() => this.tasksService.getTasks())
+        ).subscribe(
+            data => this.setTasks(data),
+            error => this.onError(error)
+        );
+    }
+
+    setUsers(data) {
+        const users = {};
+        data.forEach(x => {
+            users[x.pk] = x;
+        });
+        this.users = users;
     }
 
     setTasks(data) {

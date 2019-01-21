@@ -34,7 +34,7 @@ export class TaskDetailComponent implements OnInit {
     }
 
     getTask({pk}: any) {
-        return this.tasksService.get(`tasks/${pk}`);
+        return this.tasksService.getTask(pk);
     }
 
     setTask(data) {

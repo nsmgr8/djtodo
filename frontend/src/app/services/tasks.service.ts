@@ -25,6 +25,10 @@ export class TasksService {
         return this.http.get(url, options);
     }
 
+    getTask(pk) {
+        return this.get(`tasks/${pk}`);
+    }
+
     getTasks() {
         return this.get('tasks');
     }
@@ -41,6 +45,11 @@ export class TasksService {
     createTask(data) {
         const url = this.api_url('tasks');
         return this.http.post(url, data);
+    }
+
+    updateTask(data) {
+        const url = this.api_url(`tasks/${data.pk}`);
+        return this.http.put(url, data);
     }
 
     markDone(task) {

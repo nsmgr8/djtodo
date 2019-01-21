@@ -15,6 +15,8 @@ export class TaskEditComponent implements OnInit, AfterViewInit {
         description: '',
     };
 
+    showForm = false;
+
     @ViewChild('nameInput') nameInput;
 
     constructor(
@@ -24,6 +26,7 @@ export class TaskEditComponent implements OnInit, AfterViewInit {
     ) { }
 
     ngOnInit() {
+        this.showForm = false;
         this.route.params.subscribe(
             ({pk}: any) => {
                 this.pk = pk;
@@ -32,6 +35,8 @@ export class TaskEditComponent implements OnInit, AfterViewInit {
                         .subscribe(
                             task => this.setTask(task)
                         );
+                } else {
+                    this.showForm = true;
                 }
             }
         );
@@ -42,10 +47,11 @@ export class TaskEditComponent implements OnInit, AfterViewInit {
     }
 
     setTask(task) {
-        if (task.pk !== this.tasksService.currentUser.pk) {
+        if (task.created_by !== this.tasksService.currentUser.pk) {
             return this.router.navigate(['/task', task.pk]);
         }
         this.model = task;
+        this.showForm = true;
     }
 
     edit() {

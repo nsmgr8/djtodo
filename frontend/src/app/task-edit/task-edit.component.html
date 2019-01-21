@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <form (ngSubmit)="edit()">
+    <form (ngSubmit)="edit()" [class.hidden]="!showForm">
         <div class="card mt-2">
             <div class="card-header">
                 Create New Task

@@ -6,7 +6,7 @@
             </div>
             <div *ngIf="task.created_by === current_user.pk">
                 <a class="btn btn-sm btn-info mr-2"
-                   [routerLink]="['edit', {pk: task.pk}]">
+                   [routerLink]="['/edit', task.pk]">
                     Edit
                 </a>
                 <button class="btn btn-sm btn-warning"

@@ -9,7 +9,7 @@ import { AuthInterceptor } from './services/auth.guard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TaskListComponent } from './task-list/task-list.component';
-import { TaskCreateComponent } from './task-create/task-create.component';
+import { TaskEditComponent } from './task-edit/task-edit.component';
 import { LoginComponent } from './login/login.component';
 import { TaskDetailComponent } from './task-detail/task-detail.component';
 
@@ -17,7 +17,7 @@ import { TaskDetailComponent } from './task-detail/task-detail.component';
     declarations: [
         AppComponent,
         TaskListComponent,
-        TaskCreateComponent,
+        TaskEditComponent,
         LoginComponent,
         TaskDetailComponent
     ],

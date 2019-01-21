@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { TasksService } from '../services/tasks.service';
 
 @Component({
-    selector: 'app-task-create',
-    templateUrl: './task-create.component.html',
-    styleUrls: ['./task-create.component.scss']
+    selector: 'app-task-edit',
+    templateUrl: './task-edit.component.html',
+    styleUrls: ['./task-edit.component.scss']
 })
-export class TaskCreateComponent implements OnInit, AfterViewInit {
+export class TaskEditComponent implements OnInit, AfterViewInit {
     model = {
         name: '',
         description: '',
@@ -44,3 +44,4 @@ export class TaskCreateComponent implements OnInit, AfterViewInit {
         console.log(error);
     }
 }
+

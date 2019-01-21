@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HttpClientXsrfModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
-import { CollapseModule } from 'ngx-bootstrap/collapse';
-
 import { AuthInterceptor } from './services/auth.guard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,8 +27,6 @@ import { TaskDetailComponent } from './task-detail/task-detail.component';
             headerName: 'X-CSRFToken',
         }),
         FormsModule,
-
-        CollapseModule.forRoot(),
 
         AppRoutingModule
     ],

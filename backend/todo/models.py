@@ -29,6 +29,7 @@ class Task(models.Model):
 
     class Meta:
         get_latest_by = '-created_on'
+        ordering = ('-created_on',)
 
     def __str__(self):
         return self.name and self.name[:20] or '<None>'

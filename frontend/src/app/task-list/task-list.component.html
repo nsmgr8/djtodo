@@ -2,6 +2,7 @@
     <table class="table table-sm table-striped table-hover">
         <thead>
             <tr>
+                <th class="text-right">#</th>
                 <th>Name</th>
                 <th class="d-none d-md-block">Description</th>
                 <th>Created by</th>
@@ -11,6 +12,7 @@
 
         <tbody>
             <tr *ngFor="let task of tasks">
+                <th class="text-right">{{ task.pk }}</th>
                 <td>
                     <a [routerLink]="['/task', task.pk]">
                         {{ task.name }}

@@ -9,10 +9,10 @@ import { TaskDetailComponent } from './task-detail/task-detail.component';
 
 const routes: Routes = [
     {path: '', redirectTo: '/tasks', pathMatch: 'full'},
-    {path: 'tasks', component: TaskListComponent},
+    {path: 'tasks', component: TaskListComponent, canActivate: [AuthGuard]},
     {path: 'create', component: TaskEditComponent, canActivate: [AuthGuard]},
     {path: 'edit/:pk', component: TaskEditComponent, canActivate: [AuthGuard]},
-    {path: 'task/:pk', component: TaskDetailComponent},
+    {path: 'task/:pk', component: TaskDetailComponent, canActivate: [AuthGuard]},
     {path: 'login', component: LoginComponent},
 ];
 

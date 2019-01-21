@@ -8,7 +8,7 @@ from django.contrib.auth import (
 from django.utils import timezone
 
 from rest_framework import viewsets, serializers, generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -31,7 +31,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request):
         request.data['created_by'] = request.user.pk
@@ -67,6 +67,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 class UserListView(generics.ListAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
 
 
 @require_POST

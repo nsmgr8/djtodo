@@ -42,6 +42,13 @@ export class TasksService {
         return this.http.post(url, creds);
     }
 
+    logout() {
+        const url = this.api_url('logout');
+        return this.http.post(url, {}).pipe(
+            tap(() => this.currentUser = {})
+        );
+    }
+
     createTask(data) {
         const url = this.api_url('tasks');
         return this.http.post(url, data);

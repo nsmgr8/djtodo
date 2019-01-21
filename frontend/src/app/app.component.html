@@ -6,11 +6,22 @@
     </button>
 
     <div class="collapse navbar-collapse" [collapse]="!nav.show">
-        <a class="btn btn-danger ml-auto mr-2" [routerLink]="['/create']">Create</a>
+        <a class="btn btn-primary ml-auto mr-2" [routerLink]="['/create']">
+            Create
+        </a>
 
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-        </form>
+        <a class="btn btn-success"
+           *ngIf="!tasksService.currentUser?.username"
+           [routerLink]="['/login']">
+            Login
+        </a>
+
+        <button class="btn btn-danger"
+                type="button"
+                *ngIf="tasksService.currentUser?.username"
+                (click)="logout()">
+            Logout
+        </button>
     </div>
 </nav>
 

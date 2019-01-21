@@ -48,6 +48,11 @@ export class TasksService {
         return this.http.post(url, {status: true});
     }
 
+    deleteTask(task) {
+        const url = this.api_url(`tasks/${task.pk}`);
+        return this.http.delete(url);
+    }
+
     whoami() {
         return this.get('whoami').pipe(
             tap(user => {

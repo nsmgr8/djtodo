@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { switchMap, tap } from 'rxjs/operators';
 
@@ -13,14 +13,17 @@ import { TasksService } from '../services/tasks.service';
 export class TaskDetailComponent implements OnInit {
     task;
     users = {};
+    current_user = {};
 
     constructor(
         private tasksService: TasksService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit() {
-        this.tasksService.whoami().subscribe();
+        this.tasksService.whoami()
+            .subscribe(user => this.current_user = user);
         this.route.params.pipe(
             switchMap(params => this.getTask(params)),
             tap(data => this.setTask(data)),
@@ -54,5 +57,12 @@ export class TaskDetailComponent implements OnInit {
 
     update(task) {
         this.task = task;
+    }
+
+    deleteTask() {
+        this.tasksService.deleteTask(this.task)
+            .subscribe(
+                () => this.router.navigate(['/tasks'])
+            );
     }
 }

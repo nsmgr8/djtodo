@@ -10,6 +10,7 @@ import { TaskListComponent } from './task-list/task-list.component';
 import { TaskEditComponent } from './task-edit/task-edit.component';
 import { LoginComponent } from './login/login.component';
 import { TaskDetailComponent } from './task-detail/task-detail.component';
+import { NoContentComponent } from './no-content/no-content.component';
 
 @NgModule({
     declarations: [
@@ -17,7 +18,8 @@ import { TaskDetailComponent } from './task-detail/task-detail.component';
         TaskListComponent,
         TaskEditComponent,
         LoginComponent,
-        TaskDetailComponent
+        TaskDetailComponent,
+        NoContentComponent
     ],
     imports: [
         BrowserModule,

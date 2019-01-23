@@ -29,8 +29,8 @@ export class TasksService {
         return this.get(`tasks/${pk}`);
     }
 
-    getTasks() {
-        return this.get('tasks');
+    getTasks(params) {
+        return this.get('tasks', {params});
     }
 
     getUsers() {

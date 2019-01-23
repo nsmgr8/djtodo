@@ -12,6 +12,7 @@ from rest_framework import viewsets, serializers, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Task
 
@@ -29,10 +30,25 @@ class TaskSerializer(serializers.ModelSerializer):
                   'status', 'done_by', 'done_at')
 
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = StandardResultsSetPagination
+
+    def list(self, request):
+        status = request.query_params.get('status')
+        if status == 'done':
+            self.queryset = self.queryset.filter(status=True)
+        if status == 'undone':
+            self.queryset = self.queryset.filter(status=False)
+        return super().list(request)
 
     def create(self, request):
         request.data['created_by'] = request.user.pk

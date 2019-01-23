@@ -41,3 +41,48 @@
         </tbody>
     </table>
 </div>
+
+<nav class="navbar fixed-bottom navbar-light bg-secondary">
+    <ul class="pagination mb-0 small">
+        <li class="page-item" [class.disabled]="!pager?.previous">
+            <button class="page-link" [disabled]="!pager?.previous"
+                (click)="page(-1)">
+                <span class="d-none d-sm-inline">
+                    Previous
+                </span>
+                <span class="d-sm-none">
+                    &laquo;
+                </span>
+            </button>
+        </li>
+        <li class="page-item active">
+            <span class="page-link">{{ pager?.current }}</span>
+        </li>
+        <li class="page-item" [class.disabled]="!pager?.next">
+            <button class="page-link" [disabled]="!pager?.next"
+            (click)="page(1)">
+                <span class="d-none d-sm-inline">
+                    Next
+                </span>
+                <span class="d-sm-none">
+                    &raquo;
+                </span>
+            </button>
+        </li>
+    </ul>
+
+    <button class="btn btn-sm btn-light" disabled *ngIf="pager?.count">
+        <span class="d-none d-sm-inline">Total:</span> {{ pager?.count }}
+    </button>
+
+    <div class="form-inline">
+        <select id="id_status_select"
+                class="form-control form-control-sm"
+                [(ngModel)]="status"
+                (change)="filterByStatus()">
+            <option value="all">All</option>
+            <option value="undone">Undone</option>
+            <option value="done">Done</option>
+        </select>
+    </div>
+</nav>

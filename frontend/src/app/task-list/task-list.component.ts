@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { tap, switchMap } from 'rxjs/operators';
 
@@ -12,20 +13,28 @@ import { TasksService } from '../services/tasks.service';
 export class TaskListComponent implements OnInit {
     tasks = [];
     users;
+    current_params;
+    pager;
+    status = 'all';
 
     constructor(
-        private tasksService: TasksService
+        private tasksService: TasksService,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit() {
         this.tasksService.whoami().subscribe();
-        this.getTasks();
+        this.route.params.subscribe(params => this.getTasks(params));
     }
 
-    getTasks() {
+    getTasks(params) {
+        this.current_params = params;
+        this.status = params.status || 'all';
+
         this.tasksService.getUsers().pipe(
             tap(data => this.setUsers(data)),
-            switchMap(() => this.tasksService.getTasks())
+            switchMap(() => this.tasksService.getTasks(params))
         ).subscribe(
             data => this.setTasks(data),
             error => this.onError(error)
@@ -41,7 +50,15 @@ export class TaskListComponent implements OnInit {
     }
 
     setTasks(data) {
-        this.tasks = data;
+        this.tasks = data.results;
+        const current = +(this.current_params.page || 1);
+        const pager: any = {
+            current,
+            count: data.count,
+            next: data.next && +(data.next.replace(/^.*?page=/, '').split('&')[0]),
+            previous: current - 1,
+        };
+        this.pager = pager;
     }
 
     onError(error) {
@@ -59,5 +76,24 @@ export class TaskListComponent implements OnInit {
         this.tasks = this.tasks.map(x => {
             return x.pk === task.pk ? task : x;
         });
+    }
+
+    reload(params) {
+        this.router.navigate(['.', params]);
+    }
+
+    page(direction) {
+        this.reload({
+            ...this.current_params,
+            page: this.pager.current + direction,
+        });
+    }
+
+    filterByStatus() {
+        if (this.status !== '') {
+            this.reload({status: this.status});
+        } else {
+            this.reload({});
+        }
     }
 }

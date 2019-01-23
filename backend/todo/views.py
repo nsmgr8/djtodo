@@ -6,6 +6,7 @@ from django.contrib.auth import (
     get_user_model, authenticate, login as auth_login, logout as auth_logout
 )
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import viewsets, serializers, generics
 from rest_framework.permissions import IsAuthenticated
@@ -71,6 +72,7 @@ class UserListView(generics.ListAPIView):
 
 
 @require_POST
+@csrf_exempt
 def login(request):
     creds = json.loads(request.body)
     user = authenticate(**creds)

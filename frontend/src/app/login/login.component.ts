@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { ToasterService } from 'angular2-toaster';
+
 import { TasksService } from '../services/tasks.service';
 
 @Component({
@@ -20,7 +22,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     constructor(
         private tasksService: TasksService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private toaster: ToasterService
     ) { }
 
     ngOnInit() {
@@ -37,7 +40,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.tasksService.login(this.model)
             .subscribe(
                 data => this.setUser(data),
-                error => this.setError(error)
+                error => this.onError('Could not login, please use correct username and password')
             );
     }
 
@@ -46,7 +49,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.router.navigate([this.returnUrl]);
     }
 
-    setError(error) {
-        console.log(error);
+    onError(body) {
+        this.toaster.pop({type: 'error', title: 'ERROR', body});
     }
 }

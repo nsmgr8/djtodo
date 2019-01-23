@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { switchMap, tap } from 'rxjs/operators';
+import { ToasterService } from 'angular2-toaster';
 
 import { TasksService } from '../services/tasks.service';
 
@@ -18,7 +19,8 @@ export class TaskDetailComponent implements OnInit {
     constructor(
         private tasksService: TasksService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private toaster: ToasterService
     ) { }
 
     ngOnInit() {
@@ -29,7 +31,8 @@ export class TaskDetailComponent implements OnInit {
             tap(data => this.setTask(data)),
             switchMap(() => this.tasksService.getUsers())
         ).subscribe(
-            data => this.setUsers(data)
+            data => this.setUsers(data),
+            () => this.onError('Could not get the Task')
         );
     }
 
@@ -51,7 +54,8 @@ export class TaskDetailComponent implements OnInit {
 
     markDone() {
         this.tasksService.markDone(this.task).subscribe(
-            data => this.update(data)
+            data => this.update(data),
+            () => this.onError('Could not mark "Done"')
         );
     }
 
@@ -63,8 +67,16 @@ export class TaskDetailComponent implements OnInit {
         if (confirm('Are you sure you want to delete this task?')) {
             this.tasksService.deleteTask(this.task)
                 .subscribe(
-                    () => this.router.navigate(['/tasks'])
+                    () => {
+                        this.router.navigate(['/tasks']);
+                        this.toaster.pop('success', 'Task deleted');
+                    },
+                    () => this.onError('Counld not delete the task')
                 );
         }
+    }
+
+    onError(body) {
+        this.toaster.pop({type: 'error', title: 'ERROR', body});
     }
 }

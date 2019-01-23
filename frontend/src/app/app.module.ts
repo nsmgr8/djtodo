@@ -1,7 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HttpClientXsrfModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+
+import { ToasterModule } from 'angular2-toaster';
 
 import { AuthInterceptor } from './services/auth.guard';
 import { AppRoutingModule } from './app-routing.module';
@@ -23,12 +26,15 @@ import { NoContentComponent } from './no-content/no-content.component';
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         HttpClientModule,
         HttpClientXsrfModule.withOptions({
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
         }),
         FormsModule,
+
+        ToasterModule.forRoot(),
 
         AppRoutingModule
     ],

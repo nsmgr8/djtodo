@@ -1,6 +1,8 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { ToasterService } from 'angular2-toaster';
+
 import { TasksService } from '../services/tasks.service';
 
 @Component({
@@ -22,7 +24,8 @@ export class TaskEditComponent implements OnInit, AfterViewInit {
     constructor(
         private tasksService: TasksService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private toaster: ToasterService
     ) { }
 
     ngOnInit() {
@@ -33,7 +36,8 @@ export class TaskEditComponent implements OnInit, AfterViewInit {
                 if (pk) {
                     this.tasksService.getTask(pk)
                         .subscribe(
-                            task => this.setTask(task)
+                            task => this.setTask(task),
+                            () => this.onError('Could not get task')
                         );
                 } else {
                     this.showForm = true;
@@ -63,16 +67,17 @@ export class TaskEditComponent implements OnInit, AfterViewInit {
         }
         service.subscribe(
             data => this.success(data),
-            error => this.setError(error)
+            error => this.onError('Could not save task')
         );
     }
 
     success(data) {
         this.router.navigate(['/tasks']);
+        this.toaster.pop({type: 'success', title: 'Task saved'});
     }
 
-    setError(error) {
-        console.log(error);
+    onError(body) {
+        this.toaster.pop({type: 'error', title: 'ERROR', body});
     }
 }
 

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { ToasterConfig } from 'angular2-toaster';
+
 import { TasksService } from './services/tasks.service';
 
 @Component({
@@ -9,6 +11,11 @@ import { TasksService } from './services/tasks.service';
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+    toasterConfig = new ToasterConfig({
+        positionClass: 'toast-bottom-center',
+        limit: 3,
+    });
+
     constructor(
         public tasksService: TasksService,
         private router: Router

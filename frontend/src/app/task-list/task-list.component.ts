@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { tap, switchMap } from 'rxjs/operators';
+import { ToasterService } from 'angular2-toaster';
 
 import { TasksService } from '../services/tasks.service';
 
@@ -20,7 +21,8 @@ export class TaskListComponent implements OnInit {
     constructor(
         private tasksService: TasksService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private toaster: ToasterService
     ) { }
 
     ngOnInit() {
@@ -37,7 +39,7 @@ export class TaskListComponent implements OnInit {
             switchMap(() => this.tasksService.getTasks(params))
         ).subscribe(
             data => this.setTasks(data),
-            error => this.onError(error)
+            error => this.onError('Could not get tasks')
         );
     }
 
@@ -61,14 +63,14 @@ export class TaskListComponent implements OnInit {
         this.pager = pager;
     }
 
-    onError(error) {
-        console.log(error);
+    onError(body) {
+        this.toaster.pop({type: 'error', title: 'ERROR', body});
     }
 
     markDone(task) {
         this.tasksService.markDone(task).subscribe(
             data => this.update(data),
-            error => this.onError(error)
+            error => this.onError('Could not mark "Done"')
         );
     }
 

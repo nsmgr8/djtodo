@@ -60,9 +60,11 @@ export class TaskDetailComponent implements OnInit {
     }
 
     deleteTask() {
-        this.tasksService.deleteTask(this.task)
-            .subscribe(
-                () => this.router.navigate(['/tasks'])
-            );
+        if (confirm('Are you sure you want to delete this task?')) {
+            this.tasksService.deleteTask(this.task)
+                .subscribe(
+                    () => this.router.navigate(['/tasks'])
+                );
+        }
     }
 }

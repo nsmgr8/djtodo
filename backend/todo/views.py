@@ -43,7 +43,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def list(self, request):
-        status = request.query_params.get('status')
+        status = request.query_params.get('status', 'undone')
         if status == 'done':
             self.queryset = self.queryset.filter(status=True)
         if status == 'undone':

@@ -16,7 +16,7 @@ export class TaskListComponent implements OnInit {
     users;
     current_params;
     pager;
-    status = 'all';
+    status = 'undone';
 
     constructor(
         private tasksService: TasksService,
@@ -32,7 +32,7 @@ export class TaskListComponent implements OnInit {
 
     getTasks(params) {
         this.current_params = params;
-        this.status = params.status || 'all';
+        this.status = params.status || 'undone';
 
         this.tasksService.getUsers().pipe(
             tap(data => this.setUsers(data)),

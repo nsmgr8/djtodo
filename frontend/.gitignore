@@ -2,6 +2,8 @@
 
 # cypress output
 cypress/videos/
+cypress/screenshots/
+
 # compiled output
 /dist
 /tmp

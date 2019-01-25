@@ -51,9 +51,7 @@ describe('angular UI tests', () => {
             });
         });
 
-        it.only('create a task', () => {
-            cy.server();
-            cy.route('/api/whoami/').as('whoami');
+        it('create a task', () => {
             cy.route('POST', '/api/tasks/').as('tasks');
 
             cy.visit(url('create'));
@@ -69,8 +67,26 @@ describe('angular UI tests', () => {
 
             cy.wait('@tasks').then(xhr => {
                 expect(xhr.status).to.equal(201);
+                expect(xhr.responseBody.pk > 0).to.be.true;
             });
             cy.url().should('contain', '/tasks');
+        });
+
+        it('creating task requires task name', () => {
+            cy.route('POST', '/api/tasks/').as('tasks');
+
+            cy.visit(url('create'));
+
+            cy.get('#id_description').type('task 1 description');
+            cy.get('button[type="submit"]').click();
+
+            cy.wait('@tasks').then(xhr => {
+                expect(xhr.status).to.equal(400);
+                expect(xhr.responseBody.name.length).to.equal(1);
+            });
+            cy.url().should('contain', '/create');
+
+            cy.get('.toast').contains('ERROR');
         });
     });
 });

@@ -88,5 +88,43 @@ describe('angular UI tests', () => {
 
             cy.get('.toast').contains('ERROR');
         });
+
+        it('lists tasks', () => {
+            cy.get('tbody td').its('length').should('be.gt', 0);
+            cy.get('tbody td a').should('have.attr', 'href').then(link => {
+                expect(link).to.match(/^\/task\/\d+$/);
+            });
+        });
+
+        it('can edit task', () => {
+            cy.get('tbody td a').should('have.attr', 'href').then(link => {
+                cy.visit(url(link));
+                cy.get('a:contains("Edit")').should('have.attr', 'href').then(edit => {
+                    cy.visit(url(edit));
+
+                    cy.get('#id_status').not('have.checked');
+                    cy.get('#id_name').clear();
+                    cy.get('#id_name').type('Task edited');
+                    cy.get('button[type="submit"]').click();
+
+                    cy.visit(url(edit));
+                    cy.get('#id_name').should('have.value', 'Task edited');
+                    cy.get('#id_status').click();
+                    cy.get('button[type="submit"]').click();
+
+                    cy.visit(url(edit));
+                    cy.get('#id_status').should('have.checked');
+                    cy.get('#id_status').click();
+                    cy.get('button[type="submit"]').click();
+                });
+            });
+        });
+
+        it('can delete task', () => {
+            cy.get('tbody td a').should('have.attr', 'href').then(link => {
+                cy.visit(url(link));
+                cy.get('button:contains("Delete")').click();
+            });
+        });
     });
 });

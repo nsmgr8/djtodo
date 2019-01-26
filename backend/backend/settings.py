@@ -133,5 +133,10 @@ REST_FRAMEWORK = {
     ),
 }
 
+try:
+    from .settings_local import *
+except ImportError:
+    pass
+
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_ALLOW_CREDENTIALS = DEBUG

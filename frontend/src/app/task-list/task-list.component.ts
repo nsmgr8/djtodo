@@ -1,3 +1,6 @@
+/**
+ * task listing page
+ */
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -6,6 +9,9 @@ import { ToasterService } from 'angular2-toaster';
 
 import { TasksService } from '../services/tasks.service';
 
+/**
+ * comonent for listing tasks
+ */
 @Component({
     selector: 'app-task-list',
     templateUrl: './task-list.component.html',
@@ -18,6 +24,13 @@ export class TaskListComponent implements OnInit {
     pager;
     status = 'undone';
 
+    /**
+     * constructor
+     * @param tasksService task api service
+     * @param route activated route service
+     * @param router route navigation service
+     * @param toaster notification balloon service
+     */
     constructor(
         private tasksService: TasksService,
         private route: ActivatedRoute,
@@ -25,11 +38,18 @@ export class TaskListComponent implements OnInit {
         private toaster: ToasterService
     ) { }
 
+    /**
+     * Component initialisation hook
+     */
     ngOnInit() {
         this.tasksService.whoami().subscribe();
         this.route.params.subscribe(params => this.getTasks(params));
     }
 
+    /**
+     * request the task list from backend
+     * @param params the route params, can be used to filter the tasks
+     */
     getTasks(params) {
         this.current_params = params;
         this.status = params.status || 'undone';
@@ -43,6 +63,10 @@ export class TaskListComponent implements OnInit {
         );
     }
 
+    /**
+     * set the list of users
+     * @param data list of users
+     */
     setUsers(data) {
         const users = {};
         data.forEach(x => {
@@ -51,6 +75,10 @@ export class TaskListComponent implements OnInit {
         this.users = users;
     }
 
+    /**
+     * set the task list
+     * @param data a list tasks from api
+     */
     setTasks(data) {
         this.tasks = data.results;
         const current = +(this.current_params.page || 1);
@@ -63,10 +91,18 @@ export class TaskListComponent implements OnInit {
         this.pager = pager;
     }
 
+    /**
+     * show error message
+     * @param body error message
+     */
     onError(body) {
         this.toaster.pop({type: 'error', title: 'ERROR', body});
     }
 
+    /**
+     * request marking done for a given task
+     * @param task the task to mark done
+     */
     markDone(task) {
         this.tasksService.markDone(task).subscribe(
             data => this.update(data),
@@ -74,16 +110,29 @@ export class TaskListComponent implements OnInit {
         );
     }
 
+    /**
+     * update the given task with new data
+     * @param task the task with new data to update
+     */
     update(task) {
         this.tasks = this.tasks.map(x => {
             return x.pk === task.pk ? task : x;
         });
     }
 
+    /**
+     * reload the listing with new params/filters
+     * @param params the route params such as status filter, pagination, etc.
+     */
     reload(params) {
         this.router.navigate(['.', params]);
     }
 
+    /**
+     * paginate the list
+     * @param direction the direction of the page
+     *      +ve to page forward, -ve to page backward
+     */
     page(direction) {
         this.reload({
             ...this.current_params,
@@ -91,6 +140,9 @@ export class TaskListComponent implements OnInit {
         });
     }
 
+    /**
+     * filter the list by currently selected status value
+     */
     filterByStatus() {
         if (this.status !== '') {
             this.reload({status: this.status});

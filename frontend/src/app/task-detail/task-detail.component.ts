@@ -1,3 +1,6 @@
+/**
+ * task detail page
+ */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -6,6 +9,9 @@ import { ToasterService } from 'angular2-toaster';
 
 import { TasksService } from '../services/tasks.service';
 
+/**
+ * componet defining the task detail page
+ */
 @Component({
     selector: 'app-task-detail',
     templateUrl: './task-detail.component.html',
@@ -16,6 +22,13 @@ export class TaskDetailComponent implements OnInit {
     users = {};
     current_user = {};
 
+    /**
+     * constructor
+     * @param tasksService tasks API service
+     * @param route activated route service
+     * @param router Router service for navigation
+     * @param toaster notification balloon service
+     */
     constructor(
         private tasksService: TasksService,
         private route: ActivatedRoute,
@@ -23,6 +36,9 @@ export class TaskDetailComponent implements OnInit {
         private toaster: ToasterService
     ) { }
 
+    /**
+     * component initialisation hook
+     */
     ngOnInit() {
         this.tasksService.whoami()
             .subscribe(user => this.current_user = user);
@@ -36,14 +52,26 @@ export class TaskDetailComponent implements OnInit {
         );
     }
 
+    /**
+     * get the current task from api
+     * @param pk the id of the task
+     */
     getTask({pk}: any) {
         return this.tasksService.getTask(pk);
     }
 
+    /**
+     * set the task info
+     * @param data the task information from backend
+     */
     setTask(data) {
         this.task = data;
     }
 
+    /**
+     * set the list of users
+     * @param data the user list data from backend
+     */
     setUsers(data) {
         const users = {};
         data.forEach(x => {
@@ -52,6 +80,9 @@ export class TaskDetailComponent implements OnInit {
         this.users = users;
     }
 
+    /**
+     * send the mark done request to the API
+     */
     markDone() {
         this.tasksService.markDone(this.task).subscribe(
             data => this.update(data),
@@ -59,10 +90,17 @@ export class TaskDetailComponent implements OnInit {
         );
     }
 
+    /**
+     * update the current task with updated information
+     * @param task updated task data
+     */
     update(task) {
         this.task = task;
     }
 
+    /**
+     * send the delete request to the api
+     */
     deleteTask() {
         if (confirm('Are you sure you want to delete this task?')) {
             this.tasksService.deleteTask(this.task)
@@ -76,6 +114,10 @@ export class TaskDetailComponent implements OnInit {
         }
     }
 
+    /**
+     * show error message
+     * @param body error message
+     */
     onError(body) {
         this.toaster.pop({type: 'error', title: 'ERROR', body});
     }

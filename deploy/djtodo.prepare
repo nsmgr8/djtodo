@@ -1,0 +1,11 @@
+#!/bin/bash
+
+ROOT=/opt/djtodo
+
+cd ${ROOT}/frontend
+npm install
+npm run build -- --prod
+
+cd ${ROOT}/backend
+${ROOT}/venv/bin/python manage.py migrate
+${ROOT}/venv/bin/python manage.py collectstatic --no-input

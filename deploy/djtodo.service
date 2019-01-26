@@ -1,0 +1,10 @@
+[Unit]
+Description=gunicorn web server for djtodo
+
+[Service]
+ExecStart=/opt/djtodo/deploy/djtodo.start
+WorkingDirectory=/opt/djtodo/backend
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

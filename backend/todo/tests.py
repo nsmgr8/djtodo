@@ -1,4 +1,6 @@
+import json
 from datetime import date
+from unittest import mock
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -6,6 +8,7 @@ from django.contrib.admin.sites import AdminSite
 
 from .models import Task
 from .admin import TaskAdmin
+from . import views
 
 
 class TaskModelTest(TestCase):
@@ -146,3 +149,84 @@ class TaskAdminTest(TestCase):
         # users can only mark done/undone others tasks
         editable_fields = {'status'}
         self.assertEqual(fields - set(ta.readonly_fields), editable_fields)
+
+
+class TaskAPIAuthTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.user3 = get_user_model().objects.create(username='user3',
+                                                    is_staff=True,
+                                                    is_superuser=True)
+        cls.user3.set_password('password')
+        cls.user3.save()
+
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        get_user_model().objects.all().delete()
+        super().tearDownClass()
+
+    def setUp(self):
+        self.task = Task.objects.create(name='Task', created_by=self.user3)
+
+    def tearDown(self):
+        Task.objects.all().delete()
+
+    @mock.patch('todo.views.auth_login')
+    def test_login(self, auth_login):
+        request = MockRequest()
+        request.body = json.dumps({
+            'username': 'user3',
+            'password': 'password',
+        })
+        request.method = 'POST'
+        response = views.login(request)
+        user = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(user['username'], 'user3')
+
+        request.body = json.dumps({'username': 'not-exist'})
+        response = views.login(request)
+        user = json.loads(response.content)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('failed', user['error'])
+
+    @mock.patch('todo.views.auth_logout')
+    def test_logout(self, auth_logout):
+        request = MockRequest()
+        request.method = 'POST'
+        response = views.logout(request)
+        data = json.loads(response.content)
+        self.assertEqual(data['success'], 'logout')
+
+    def test_is_authenticated(self):
+        request = mock.Mock()
+        request.user.is_authenticated = False
+        response = views.is_authenticated(request)
+        self.assertEqual(response.status_code, 401)
+
+        request.user.is_authenticated = True
+        request.user.pk = 1
+        request.user.username = 'user'
+        request.user.email = ''
+        response = views.is_authenticated(request)
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['username'], 'user')
+
+    def test_whoami(self):
+        request = mock.Mock()
+        request.user.is_authenticated = False
+        response = views.whoami(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'{}')
+
+        request.user.is_authenticated = True
+        request.user.pk = 1
+        request.user.username = 'user'
+        request.user.email = ''
+        response = views.is_authenticated(request)
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['username'], 'user')

@@ -3,7 +3,7 @@
 ROOT=/opt/djtodo
 cd ${ROOT}/backend
 
-{ROOT}/venv/bin/gunicorn \
+${ROOT}/venv/bin/gunicorn \
     --workers=3 \
     --name=djtodo \
     --access-logfile ${ROOT}/logs/gunicorn.access.log \

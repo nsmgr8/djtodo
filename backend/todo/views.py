@@ -1,3 +1,7 @@
+"""
+HTTP API views
+"""
+
 import json
 
 from django.http import JsonResponse
@@ -18,13 +22,20 @@ from .models import Task
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    serializer for the auth.user model
+    """
     class Meta:
         model = get_user_model()
         fields = ('pk', 'username', 'email')
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    """
+    serializer for the task model
+    """
     created_by = serializers.PrimaryKeyRelatedField(read_only=True)
+    """creator is set automatically from current user in the view"""
 
     class Meta:
         model = Task
@@ -33,21 +44,33 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class StandardResultsSetPagination(PageNumberPagination):
+    """
+    Pagination definition for the task list
+    """
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 1000
 
 
 class TaskViewSet(viewsets.ModelViewSet):
+    """
+    Task API view set
+    """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
+        """
+        override the the creation operation to add created_by user
+        """
         serializer.save(created_by=self.request.user)
 
     def list(self, request):
+        """
+        List the tasks, can filter by status
+        """
         status = request.query_params.get('status', 'undone')
         if status == 'done':
             self.queryset = self.queryset.filter(status=True)
@@ -56,6 +79,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         return super().list(request)
 
     def update(self, request, *args, **kwargs):
+        """
+        override update operation to only allow user's own task modification
+        """
         obj = self.get_object()
         if obj.created_by != request.user:
             return Response({'error': 'Updating own tasks only allowed'},
@@ -64,6 +90,9 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def mark_done(self, request, pk=None):
+        """
+        A custom view to allow marking task done by any authenticated user
+        """
         obj = self.get_object()
         if obj.status:
             return Response({'error': 'Only marking done allowed'}, status=400)
@@ -77,12 +106,16 @@ class TaskViewSet(viewsets.ModelViewSet):
             },
             partial=True
         )
+
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
 
 
 class UserListView(generics.ListAPIView):
+    """
+    Listing the available users
+    """
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
@@ -91,6 +124,9 @@ class UserListView(generics.ListAPIView):
 @require_POST
 @csrf_exempt
 def login(request):
+    """
+    Login view for the api consumer
+    """
     creds = json.loads(request.body)
     user = authenticate(**creds)
     if user is None:
@@ -107,11 +143,17 @@ def login(request):
 
 @require_POST
 def logout(request):
+    """
+    Logout view for the API consumer
+    """
     auth_logout(request)
     return JsonResponse({'success': 'logout'})
 
 
 def is_authenticated(request):
+    """
+    Check authentication for the current user
+    """
     user = _whoami(request)
     if user:
         return JsonResponse(user)
@@ -119,10 +161,19 @@ def is_authenticated(request):
 
 
 def whoami(request):
+    """
+    Get current user info
+    """
     return JsonResponse(_whoami(request))
 
 
 def _whoami(request):
+    """
+    Helper to determine current user
+
+    :param request: the HTTP request
+    :return: dict of user info if logged in, otherwise empty dict
+    """
     if request.user.is_authenticated:
         return {
             'pk': request.user.pk,

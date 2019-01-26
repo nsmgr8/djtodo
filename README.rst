@@ -15,6 +15,76 @@ given the following requirements are met.
 
 It is not tested in Windows.
 
+Deployment
+==========
+
+Following is the instruction to install the tool in Ubuntu 18.04. It comes with
+a simple installation script and service configuration bundle. All of which are
+available at `./deploy` folder.
+
+.. code::
+
+    $ sudo apt install git
+
+    $ cd /opt       # requires write permission for the current user
+    $ git clone https://github.com/nsmgr8/djtodo.git
+
+    $ cd djtodo
+    $ ./deploy/install.sh
+
+The installer script will install all system, python and nodejs dependecies. It
+will build the frontend bundle to be ready to be served by nginx. It will also
+install a systemd service for gunicorn runner for django project.
+
+After the successful installation, a couple more steps are required to complete
+the deployment. The generated nginx conf listens at port 80 which clashes with
+the nginx default config. So we need to either remove that or specifically
+target the djtodo server by a DNS name.
+
+.. code::
+
+    $ sudo rm /etc/nginx/sites-enabled/default
+
+We also need an intial admin user. Create it with the following:
+
+.. code::
+
+    $ ./venv/bin/python ./backend/manage.py createsuperuser
+
+We also need to create a production settings file. A minimal settings can be
+
+.. code::
+
+    $ cat <<EOF > ./backend/backend/settings_local.py
+
+    DEBUG = False
+
+    ALLOWED_HOSTS = ['djtodo.lan', '192.168.0.10']
+
+    EOF
+
+Replace the entries in ALLOWED_HOSTS with your production DNS name and IP
+address.
+
+Now restart the servers `nginx` and `gunicorn`.
+
+.. code::
+
+    $ sudo service nginx restart
+    $ sudo service djtodo restart
+
+Update deployment server
+------------------------
+
+When there's new update to the code, the production can be upgraded as follows:
+
+.. code::
+
+    $ cd /opt/djtodo
+    $ git pull
+    $ ./deploy/djtodo.prepare
+    $ sudo service djtodo restart
+
 Development setup
 =================
 
@@ -98,7 +168,7 @@ Running tests
 =============
 
 There are two types of automated tests available in this project. A django test
-runner and a cypress end-to-end test runner.
+runner and a cypress_ end-to-end test runner.
 
 To run the django test, follow the commands below:
 
@@ -148,3 +218,4 @@ This will open the documentation sites index page in your default browser.
 .. _angular: https://angular.io
 .. _sphinx: http://sphinx-doc.org
 .. _compodoc: https://compodoc.app
+.. _cypress: https://cypress.io

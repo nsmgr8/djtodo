@@ -13,8 +13,7 @@ document discusses about the development and deployment of this tool.
    :maxdepth: 2
    :caption: Contents:
 
-   development
-   deployment
+   README
    Backend API doc <backend/modules>
    Frontend API doc <frontend/index.html#://>
 

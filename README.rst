@@ -10,7 +10,7 @@ This code is developed in UNIX like environment and uses python and node.js. It
 is developed and tested in Ubuntu 18.04 but should work on any linux and macOS
 given the following requirements are met.
 
-1. Python 3.5+
+1. Python 3.6+
 2. node.js 8+
 
 It is not tested in Windows.
@@ -21,15 +21,17 @@ Development setup
 Follow the steps below to setup the development environment on Ubuntu 18.04.
 Replace ubuntu package manager commands with your OS commands.
 
-First of all, make sure python3.5+ and node.js is installed.
+First of all, make sure python3.6+ and node.js is installed.
 
 .. code::
 
     $ sudo apt install python3 python3-pip python3-venv
-    $ python3 --version     # must be >3.5
+    $ python3 --version     # must be >3.6
 
     $ sudo apt install nodejs npm
     $ nodejs -v             # must be >8
+    $ sudo npm install -g npm  # upgrade npm
+    $ suod npm install -g npx
 
 Grab the code from github
 
@@ -103,7 +105,8 @@ To run the django test, follow the commands below:
 .. code::
 
     $ source ./venv/bin/activate
-    $ ./backend/manage.py test
+    $ cd backend
+    $ ./manage.py test
 
 To run the e2e test run the following:
 

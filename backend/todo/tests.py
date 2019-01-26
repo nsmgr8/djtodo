@@ -5,6 +5,7 @@ from unittest import mock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.admin.sites import AdminSite
+from rest_framework.test import APIClient
 
 from .models import Task
 from .admin import TaskAdmin
@@ -230,3 +231,173 @@ class TaskAPIAuthTest(TestCase):
         data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['username'], 'user')
+
+
+class TaskAPITest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.user4 = get_user_model().objects.create(username='user4',
+                                                    is_staff=True,
+                                                    is_superuser=True)
+        cls.user4.set_password('password')
+        cls.user4.save()
+
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        get_user_model().objects.all().delete()
+        super().tearDownClass()
+
+    def setUp(self):
+        self.task_done = Task.objects.create(name='Task done',
+                                             created_by=self.user4,
+                                             status=True)
+        self.task_undone = Task.objects.create(name='Task undone',
+                                               created_by=self.user4,
+                                               status=False)
+
+    def tearDown(self):
+        Task.objects.all().delete()
+
+    def test_users(self):
+        client = APIClient()
+        response = client.get('/api/users/')
+        self.assertEqual(response.status_code, 403)
+
+        client.force_authenticate(user=self.user4)
+
+        response = client.get('/api/users/')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(data) > 0)
+        self.assertTrue([x for x in data if x['username'] == 'user4'])
+
+    def test_task_list(self):
+        client = APIClient()
+        response = client.get('/api/tasks/')
+        self.assertEqual(response.status_code, 403)
+
+        client.force_authenticate(user=self.user4)
+
+        # list of undone tasks, default
+        response = client.get('/api/tasks/')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        for key in ['count', 'next', 'previous', 'results']:
+            self.assertTrue(key in data)
+        self.assertTrue(len(data['results']) > 0)
+        self.assertTrue([x for x in data['results']
+                         if x['name'] == 'Task undone'])
+
+        # list of done tasks
+        response = client.get('/api/tasks/?status=done')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        for key in ['count', 'next', 'previous', 'results']:
+            self.assertTrue(key in data)
+        self.assertTrue(len(data['results']) > 0)
+        self.assertTrue([x for x in data['results']
+                         if x['name'] == 'Task done'])
+
+        # list all tasks
+        response = client.get('/api/tasks/?status=all')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        for key in ['count', 'next', 'previous', 'results']:
+            self.assertTrue(key in data)
+        self.assertTrue(len(data['results']) > 0)
+        self.assertTrue([x for x in data['results']
+                         if x['name'] == 'Task undone'])
+        self.assertTrue([x for x in data['results']
+                         if x['name'] == 'Task done'])
+
+    def test_task_create(self):
+        client = APIClient()
+        response = client.post('/api/tasks/')
+        self.assertEqual(response.status_code, 403)
+
+        client.force_authenticate(user=self.user4)
+
+        response = client.post('/api/tasks/')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue('name' in data)
+
+        response = client.post('/api/tasks/', {'name': 'task create'})
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(data['name'], 'task create')
+        self.assertFalse(data['status'])
+        self.assertEqual(data['created_by'], self.user4.pk)
+
+    def test_task_update(self):
+        client = APIClient()
+        response = client.post('/api/tasks/1/')
+        self.assertEqual(response.status_code, 403)
+
+        client.force_authenticate(user=self.user4)
+
+        task = Task.objects.create(name='Task to update',
+                                   created_by=self.user4)
+
+        response = client.put(f'/api/tasks/{task.pk}/')
+        self.assertEqual(response.status_code, 400)
+
+        # update own task
+        response = client.put(f'/api/tasks/{task.pk}/',
+                              {'name': 'Task updated'})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(task.pk, data['pk'])
+        self.assertEqual(data['name'], 'Task updated')
+
+        # modifying others task is not allowed
+        user = get_user_model().objects.create(username='user')
+        task = Task.objects.create(name='Others task', created_by=user)
+
+        response = client.put(f'/api/tasks/{task.pk}/',
+                              {'name': 'Task updated'})
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn('error', data)
+        self.assertIn('own tasks only', data['error'])
+
+        user.delete()
+
+    def test_mark_done(self):
+        client = APIClient()
+        response = client.post('/api/tasks/1/mark_done/')
+        self.assertEqual(response.status_code, 403)
+
+        client.force_authenticate(user=self.user4)
+
+        task = Task.objects.create(name='Task to update',
+                                   created_by=self.user4)
+        self.assertFalse(task.status)
+
+        # mark tasks done
+        response = client.post(f'/api/tasks/{task.pk}/mark_done/')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(task.pk, data['pk'])
+        self.assertTrue(data['status'])
+
+        # cannot change already done task
+        response = client.post(f'/api/tasks/{task.pk}/mark_done/')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+
+        # marking others task done is allowed
+        user = get_user_model().objects.create(username='user')
+        task = Task.objects.create(name='Others task', created_by=user)
+        self.assertFalse(task.status)
+
+        response = client.post(f'/api/tasks/{task.pk}/mark_done/')
+        data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(task.pk, data['pk'])
+        self.assertTrue(data['status'])
+
+        user.delete()

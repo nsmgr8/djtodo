@@ -24,6 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Task
         fields = ('pk', 'created_by', 'created_on', 'name', 'description',
@@ -42,6 +44,9 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     pagination_class = StandardResultsSetPagination
 
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
     def list(self, request):
         status = request.query_params.get('status', 'undone')
         if status == 'done':
@@ -50,21 +55,17 @@ class TaskViewSet(viewsets.ModelViewSet):
             self.queryset = self.queryset.filter(status=False)
         return super().list(request)
 
-    def create(self, request):
-        request.data['created_by'] = request.user.pk
-        return super().create(request)
-
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.created_by != request.user:
-            return Response({'error': 'Updating own tasks only allowed'}, status=403)
+            return Response({'error': 'Updating own tasks only allowed'},
+                            status=403)
         return super().update(request, *args, **kwargs)
 
     @action(detail=True, methods=['post'])
     def mark_done(self, request, pk=None):
         obj = self.get_object()
-        status = request.data['status']
-        if not status or obj.status:
+        if obj.status:
             return Response({'error': 'Only marking done allowed'}, status=400)
 
         serializer = self.get_serializer(

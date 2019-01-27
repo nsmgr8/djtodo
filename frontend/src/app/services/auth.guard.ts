@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 
 import { of, Observable, throwError } from 'rxjs';
 import { switchMap, catchError, tap } from 'rxjs/operators';
+import { ToasterService } from 'angular2-toaster';
 
 import { environment } from '../../environments/environment';
 import { TasksService } from './tasks.service';
@@ -62,7 +63,8 @@ export class AuthInterceptor implements HttpInterceptor {
      * @param router the router service for navigation
      */
     constructor(
-        private router: Router
+        private router: Router,
+        private toaster: ToasterService
     ) {}
 
     /**
@@ -85,8 +87,18 @@ export class AuthInterceptor implements HttpInterceptor {
                     if (resp.status === 401) {
                         this.router.navigate(['/login']);
                     }
+                    if (resp.status === 0) {
+                        this.showError('Server is not available.');
+                    }
+                    if (resp.status > 499) {
+                        this.showError('Server error occured.');
+                    }
                     return throwError(resp);
                 })
             );
+    }
+
+    showError(body) {
+        this.toaster.pop({type: 'error', title: 'ERROR', body});
     }
 }

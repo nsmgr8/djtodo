@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<div class="table-responsive" *ngIf="!loading && tasks.length">
     <table class="table table-sm table-striped table-hover">
         <thead>
             <tr>
@@ -40,6 +40,25 @@
             </tr>
         </tbody>
     </table>
+</div>
+
+<div class="container-fluid" *ngIf="loading">
+    <div class="row d-flex justify-content-center align-items-center"
+         [style.height]="'70vh'">
+        <div class="col-sm-6 text-center h2">
+            Loading tasks. Please wait...
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" *ngIf="!loading && tasks.length === 0">
+    <div class="row d-flex justify-content-center align-items-center"
+         [style.height]="'70vh'">
+        <div class="col-sm-6 text-center h2">
+            No task found.<br>
+            Create <a routerLink="/create">a new one</a>.
+        </div>
+    </div>
 </div>
 
 <nav class="navbar fixed-bottom navbar-light bg-secondary">

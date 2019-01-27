@@ -23,6 +23,7 @@ export class TaskListComponent implements OnInit {
     current_params;
     pager;
     status = 'undone';
+    loading = true;
 
     /**
      * constructor
@@ -51,6 +52,7 @@ export class TaskListComponent implements OnInit {
      * @param params the route params, can be used to filter the tasks
      */
     getTasks(params) {
+        this.loading = true;
         this.current_params = params;
         this.status = params.status || 'undone';
 
@@ -79,13 +81,14 @@ export class TaskListComponent implements OnInit {
      * set the task list
      * @param data a list tasks from api
      */
-    setTasks(data) {
-        this.tasks = data.results;
+    setTasks({results, count, next}: any) {
+        this.loading = false;
+        this.tasks = results;
         const current = +(this.current_params.page || 1);
         const pager: any = {
             current,
-            count: data.count,
-            next: data.next && +(data.next.replace(/^.*?page=/, '').split('&')[0]),
+            count: count,
+            next: next && +(next.replace(/^.*?page=/, '').split('&')[0]),
             previous: current - 1,
         };
         this.pager = pager;

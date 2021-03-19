@@ -1,5 +1,5 @@
 Django==2.2.10
-djangorestframework==3.9.1
+djangorestframework==3.11.2
 django-cors-headers==2.4.0
 
 gunicorn==19.9.0
